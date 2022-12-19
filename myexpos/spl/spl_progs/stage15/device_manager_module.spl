@@ -1,0 +1,36 @@
+alias functionNum R1;
+alias currentPID R2;
+alias word R3;
+
+// For terminal write function call
+if(functionNum == 3) then
+	// Calling Acquiring terminal function using resource manager module. 
+	
+	multipush(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12,R13,R14,R15);
+	functionNum = 8;						// Function number
+	
+	currentPID = [SYSTEM_STATUS_TABLE + 1];			// Current PID
+	
+	call RESOURCE_MANAGER;
+	
+	multipop(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12,R13,R14,R15);
+	
+	print word;							// Printing
+	
+
+	// Calling release terminal function using resource manager module.
+	multipush(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12,R13,R14,R15);
+	functionNum = 9;						// Function number
+	currentPID = [SYSTEM_STATUS_TABLE + 1];			// Current PID
+	
+	call RESOURCE_MANAGER;
+	
+	// Note: Return value will be in R0 register store it before restoring the registers.
+	multipop(R0,R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12,R13,R14,R15);
+	return;
+	
+else
+
+	return;
+	
+endif;

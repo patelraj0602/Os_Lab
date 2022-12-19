@@ -1,0 +1,19 @@
+fdisk
+load --os $HOME/myexpos/spl/spl_progs/stage17/os_startup.xsm
+load --module 7 $HOME/myexpos/spl/spl_progs/stage17/boot_module.xsm
+load --module 5 $HOME/myexpos/spl/spl_progs/stage17/scheduler_module.xsm
+load --module 0 $HOME/myexpos/spl/spl_progs/stage17/resource_manager.xsm
+load --module 4 $HOME/myexpos/spl/spl_progs/stage17/device_manager_module.xsm
+load --module 1 $HOME/myexpos/spl/spl_progs/stage17/process_manager_module.xsm
+load --module 2 $HOME/myexpos/spl/spl_progs/stage17/memory_manager_module.xsm
+load --idle $HOME/myexpos/expl/expl_progs/stage17/idle_process.xsm
+load --init $HOME/myexpos/expl/expl_progs/stage17/init_process.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage17/odd.xsm
+load --library $HOME/myexpos/expl/library.lib
+load --int=timer $HOME/myexpos/spl/spl_progs/stage17/timer.xsm
+load --int=10 $HOME/myexpos/spl/spl_progs/stage17/exit_int10.xsm
+load --int=7 $HOME/myexpos/spl/spl_progs/stage17/write_int7.xsm
+load --int=6 $HOME/myexpos/spl/spl_progs/stage17/read_int6.xsm
+load --int=9 $HOME/myexpos/spl/spl_progs/stage17/exec_int9.xsm
+load --exhandler $HOME/myexpos/spl/spl_progs/stage17/haltprog.xsm
+load --int=console $HOME/myexpos/spl/spl_progs/stage17/console_interrupt.xsm

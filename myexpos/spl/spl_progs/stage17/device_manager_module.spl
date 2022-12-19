@@ -1,0 +1,86 @@
+alias functionNum R1;
+alias currentPID R2;
+alias word R3;
+
+// Terminal Write Function
+
+if(functionNum == 3) then
+
+	// ACQUIRE TERMINAL
+	
+	// Saving the used registers	
+	multipush(R1,R2,R3,R4);
+	
+	// Saving the argument in the registers for calling resource manager(Acquire Terminal)
+	functionNum = 8;
+	currentPID = currentPID;
+	
+	call RESOURCE_MANAGER;
+	
+	// Restoring the registers value
+	multipop(R1,R2,R3,R4);
+	
+	
+	// The terminal is aquired we can use terminal to print word
+	print word;					
+
+	
+	// RELEASE TERMINAL
+	
+	// Saving the used registers
+	multipush(R1,R2,R3);
+	
+	// Saving the argument in the registers for calling resource manger(Release Terminal)
+	functionNum = 9;				
+	currentPID = currentPID;		
+	
+	call RESOURCE_MANAGER;
+	
+	// Note: Return value will be in R0 register store it before restoring the registers.
+	// Restoring the content of registers
+	multipop(R1,R2,R3);
+	
+	return;
+	
+endif;
+
+// Termial Read Function
+if(functionNum == 4) then
+	
+	// ACQUIRE TERMINAL
+	
+	// Saving the used registers	
+	multipush(R1,R2,R3);
+	
+	// Saving the argument in the registers for calling resource manager(Acquire Terminal)
+	functionNum = 8;
+	currentPID = currentPID;
+	
+	call RESOURCE_MANAGER;
+	
+	// Restoring the registers value
+	multipop(R1,R2,R3);
+	
+	// This instruction prompt the user for input, but till the user enters the text we will 
+	// schedule some other process
+	read;
+	[PROCESS_TABLE + (currentPID * 16) + 4] = WAIT_TERMINAL;
+	
+	
+	// Pushing the registers used till now, to invoke schedular module.
+	multipush(R1,R2,R3);
+	call SCHEDULER;
+	multipop(R1,R2,R3);
+	
+	// Storing the user input into the input buffer field of the process table.
+	alias phyAddr R4;
+	phyAddr = [PAGE_TABLE_BASE + currentPID*20 + 2*word/512]*512 + word%512;
+	[phyAddr] = [PROCESS_TABLE + 16*currentPID + 8];
+	
+	return;
+	
+	// Terminal will be released from console interrupt handler.
+
+else
+	return;
+endif;
