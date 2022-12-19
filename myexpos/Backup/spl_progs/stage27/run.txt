@@ -1,0 +1,50 @@
+fdisk
+load --os $HOME/myexpos/spl/spl_progs/stage27/os_startup.xsm
+load --module 7 $HOME/myexpos/spl/spl_progs/stage27/bm.xsm
+load --module 5 $HOME/myexpos/spl/spl_progs/stage27/scheduler_module.xsm
+load --module 0 $HOME/myexpos/spl/spl_progs/stage27/resource_manager.xsm
+load --module 4 $HOME/myexpos/spl/spl_progs/stage27/device_manager_module.xsm
+load --module 1 $HOME/myexpos/spl/spl_progs/stage27/process_manager_module.xsm
+load --module 2 $HOME/myexpos/spl/spl_progs/stage27/memory_manager_module.xsm
+load --module 3 $HOME/myexpos/spl/spl_progs/stage27/file_manager_module.xsm
+load --module 6 $HOME/myexpos/spl/spl_progs/stage27/pager_module.xsm
+load --idle $HOME/myexpos/expl/expl_progs/stage27/idle_process.xsm
+load --init $HOME/myexpos/expl/expl_progs/stage27/login.xsm
+load --shell $HOME/myexpos/expl/expl_progs/stage27/extshell.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/ls.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/rm.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/cp.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/cat.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/lu.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/ru.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/assign1.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/assign2.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/assign3.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/assign4.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/assign5.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/m_store.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/m_merge.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/m_sort.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/pgm1.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/pgm2.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage27/pid.xsm
+load --data $HOME/myexpos/expl/expl_progs/stage27/smallNum.dat
+load --library $HOME/myexpos/expl/library.lib
+load --int=10 $HOME/myexpos/spl/spl_progs/stage27/exit_int10.xsm
+load --int=7 $HOME/myexpos/spl/spl_progs/stage27/int7.xsm
+load --int=6 $HOME/myexpos/spl/spl_progs/stage27/int6.xsm
+load --int=9 $HOME/myexpos/spl/spl_progs/stage27/exec_int9.xsm
+load --int=8 $HOME/myexpos/spl/spl_progs/stage27/fork_int8.xsm
+load --int=11 $HOME/myexpos/spl/spl_progs/stage27/int11.xsm
+load --int=15 $HOME/myexpos/spl/spl_progs/stage27/shutdown_int15.xsm
+load --int=13 $HOME/myexpos/spl/spl_progs/stage27/int13.xsm
+load --int=14 $HOME/myexpos/spl/spl_progs/stage27/int14.xsm
+load --int=4 $HOME/myexpos/spl/spl_progs/stage27/int4.xsm
+load --int=5 $HOME/myexpos/spl/spl_progs/stage27/int5.xsm
+load --int=17 $HOME/myexpos/spl/spl_progs/stage27/int17.xsm
+load --int=12 $HOME/myexpos/spl/spl_progs/stage27/int12.xsm
+load --int=16 $HOME/myexpos/spl/spl_progs/stage27/int16.xsm
+load --exhandler $HOME/myexpos/spl/spl_progs/stage27/exception_handler.xsm
+load --int=timer $HOME/myexpos/spl/spl_progs/stage27/timer.xsm
+load --int=console $HOME/myexpos/spl/spl_progs/stage27/console_interrupt.xsm
+load --int=disk $HOME/myexpos/spl/spl_progs/stage27/disk_controller_interrupt.xsm

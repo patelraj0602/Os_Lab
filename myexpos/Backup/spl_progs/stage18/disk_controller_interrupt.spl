@@ -1,0 +1,31 @@
+// print("Inside");
+// breakpoint;
+
+alias userSP R0;
+userSP = SP;
+
+// Changing the user stack to kernel stack and backup the registers
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1] * 16 + 13] = SP;
+SP = [(PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1] * 16) + 11] * 512 - 1;
+backup;
+
+// Change status to 0 indicating that the disk is free.
+[DISK_STATUS_TABLE] = 0;
+
+// Change the state of all the process that are in wait_disk state.
+alias count R1;
+count = 1;
+
+while(count < 16) do
+	if([PROCESS_TABLE+(16*count)+4] == WAIT_DISK) then
+		[PROCESS_TABLE+(16*count)+4] = READY; 
+	endif;
+	count = count + 1;
+endwhile;
+
+restore;
+SP = userSP;
+
+// print("Outside");
+// breakpoint;
+ireturn;

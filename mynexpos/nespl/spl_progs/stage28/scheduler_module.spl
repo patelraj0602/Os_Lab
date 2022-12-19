@@ -1,0 +1,151 @@
+// SCHEDULE MOD_5
+
+// Acquire Scheduler
+R1 = 2;
+call ACCESS_CONTROL;
+
+alias currentPID R0;
+alias process_table_entry R1;
+alias i R2;
+alias state R3;
+alias newPID R4;
+
+
+currentPID = [SYSTEM_STATUS_TABLE+(5*CORE)+1];
+process_table_entry = PROCESS_TABLE + 16*currentPID;
+
+multipush (BP);
+
+[process_table_entry + 12] = SP % 512;
+[process_table_entry + 14] = PTBR;
+[process_table_entry + 15] = PTLR;
+
+// Primary Core
+if(CORE == 0) then
+	// Logout and secondary core doesn't have Idle2 scheduled
+	if(([SYSTEM_STATUS_TABLE+7]==1)&&([SYSTEM_STATUS_TABLE+6]!=14)) then
+		newPID = 0;
+		goto schedulingDone;
+	endif;
+endif;
+
+// Secondary Core
+if(CORE == 1) then
+	// Paging or logout started
+	if(([SYSTEM_STATUS_TABLE+7]==1)||([SYSTEM_STATUS_TABLE+5]!=0)) then
+		newPID = 14;
+		state = [PROCESS_TABLE + 14*16 + 4];
+		goto schedulingDone;
+	endif;
+endif;
+
+// For SwapOut and SwapIn
+if([SYSTEM_STATUS_TABLE + 5] != 0 ) then
+ 	if([PROCESS_TABLE + 244] == WAIT_DISK) then
+    	newPID = 0;
+  	else
+    	newPID = 15;
+		state = [PROCESS_TABLE + 16*15 + 4];
+ 	 endif;	 
+ 	 goto schedulingDone;
+endif;
+
+if(CORE == 0) then
+	// print("Here");
+	newPID = 0;
+  	i=1;
+  	while(i<14-currentPID) do
+    	state = [process_table_entry + i*16 + 4];
+    	// print(state);
+    	if(((state == READY)||(state == CREATED))&&([process_table_entry+(i*16)+6] != 1)) then
+    		if([process_table_entry+(i*16)+1] != [SYSTEM_STATUS_TABLE + 6]) then
+      			newPID = [process_table_entry + i*16 + 1];
+      			break;
+      		endif;
+    	endif;
+  		i = i + 1;
+  	endwhile; 
+
+	if(newPID == 0) then
+  		i=1;
+  		while(i<currentPID) do
+    		state = [PROCESS_TABLE + i*16 + 4];
+    	    if((state == READY || state == CREATED)&&([process_table_entry+(i*16)+6] != 1)) then
+				if([process_table_entry+(i*16)+1] != [SYSTEM_STATUS_TABLE + 6]) then
+    	    		newPID = [PROCESS_TABLE + i*16 + 1];
+    	    		break;
+    	    	endif;
+    	    endif;
+    	    i = i + 1;
+  		endwhile;
+	endif;
+	// breakpoint;
+
+// Core 1
+else
+	newPID = 14;
+  	i=1;
+  	while(i<14-currentPID) do
+    	state = [process_table_entry + i*16 + 4];
+    	if((state == READY || state == CREATED)&&([process_table_entry+(i*16)+6] != 1)) then
+    		if([process_table_entry + i*16 + 1] != [SYSTEM_STATUS_TABLE + 1]) then
+      			newPID = [process_table_entry + i*16 + 1];
+      			break;
+      		endif;
+    	endif;
+  		i = i + 1;
+  	endwhile; 
+
+	if(newPID == 14) then
+  		i=3;
+  		while(i<currentPID) do
+    		state = [PROCESS_TABLE + i*16 + 4];
+    	    if((state == READY || state == CREATED)&&([process_table_entry+(i*16)+6] != 1)) then
+    	    	if([PROCESS_TABLE + i*16 + 1] != [SYSTEM_STATUS_TABLE + 1]) then
+    	    		newPID = [PROCESS_TABLE + i*16 + 1];
+    	    		break;
+    	    	endif;
+    	    endif;
+    	    i = i + 1;
+  		endwhile;
+	endif;
+
+endif;
+
+
+schedulingDone:
+
+process_table_entry = PROCESS_TABLE + (newPID * 16);
+state = [process_table_entry+4];
+SP = [process_table_entry + 11]*512 + [process_table_entry + 12];
+PTBR = [process_table_entry + 14];
+PTLR = [process_table_entry + 15];
+
+[SYSTEM_STATUS_TABLE+(5*CORE)+1] = newPID;
+// breakpoint;
+
+if(state == CREATED) then
+	BP = [[process_table_entry+11]*512]; 
+	[process_table_entry + 4] = RUNNING;
+	[process_table_entry + 9] = 0;
+	
+	// Release Scheduler
+	multipush(R1,R2);
+	R1 = RELEASE_LOCK;
+	R2 = SCHED_LOCK;
+	call ACCESS_CONTROL;
+	multipop(R1,R2);
+	
+	SP = [process_table_entry + 13];
+	ireturn;
+endif;
+
+multipop (BP);
+[process_table_entry + 4] = RUNNING;
+
+// Release Scheduler
+R1 = RELEASE_LOCK;
+R2 = SCHED_LOCK;
+call ACCESS_CONTROL;
+
+return;

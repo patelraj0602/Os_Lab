@@ -1,0 +1,57 @@
+alias functionNum R1;
+
+// Get free page
+if(functionNum == 1) then
+	
+	// breakpoint;
+	[SYSTEM_STATUS_TABLE+3] = [SYSTEM_STATUS_TABLE+3] + 1;
+	
+	while([SYSTEM_STATUS_TABLE+2] == 0) do
+		[PROCESS_TABLE + 16*[SYSTEM_STATUS_TABLE + 1] + 4] = WAIT_MEM;
+		
+		// Call context switch module
+		multipush(R1,R2);
+		call SCHEDULER;
+		multipop(R1,R2);
+	endwhile;
+	
+	[SYSTEM_STATUS_TABLE+3] = [SYSTEM_STATUS_TABLE+3] - 1;
+	[SYSTEM_STATUS_TABLE+2] = [SYSTEM_STATUS_TABLE+2] - 1;
+	
+	alias freePage R2;
+	freePage = 76;
+	while(freePage <= 127) do
+		if([MEMORY_FREE_LIST + freePage] == 0) then
+			break;
+		endif;
+		freePage = freePage + 1;
+	endwhile;
+	[MEMORY_FREE_LIST + freePage] = 1;
+	
+	R0 = freePage;
+	
+	// breakpoint;
+	return;
+endif;
+
+// Release Page
+if(functionNum == 2) then
+
+	// breakpoint;
+	alias pageNum R2;
+	[MEMORY_FREE_LIST + pageNum] = [MEMORY_FREE_LIST + pageNum] - 1;
+	if([MEMORY_FREE_LIST + pageNum] == 0) then
+		[SYSTEM_STATUS_TABLE+2] = [SYSTEM_STATUS_TABLE+2] + 1;
+	endif;
+	
+	alias count R3;
+	count = 1;
+	while(count < 16) do
+		if(([PROCESS_TABLE+(16*count)+4]==WAIT_MEM)&&([PROCESS_TABLE+(16*count)+1]>0)&&([PROCESS_TABLE+(16*count)+1]<16)) then
+			[PROCESS_TABLE+(16*count)+4]=READY;
+		endif;
+		count = count + 1;
+	endwhile;
+	// breakpoint;
+	return;
+endif;

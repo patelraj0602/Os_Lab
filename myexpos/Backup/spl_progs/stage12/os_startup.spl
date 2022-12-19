@@ -1,0 +1,140 @@
+// For loading the code for idle process
+loadi(69,11);
+loadi(70,12);
+
+// Loading the INT7 software interrupt service code.
+loadi(16,29);
+loadi(17,30); 
+
+// Loading timer interrupt code
+loadi(4, 17);
+loadi(5, 18);
+
+// For loading library code to memory
+loadi(63,13);
+loadi(64,14);
+
+// For loading init code to memory
+loadi(65,7);
+loadi(66,8);
+
+// For loading INT10 module to memory
+loadi(22,35);
+loadi(23,36);
+
+// For loading exception handler routine to memory
+loadi(2, 15);
+loadi(3, 16);
+
+PTBR = PAGE_TABLE_BASE;
+PTLR = 10;
+
+//Library
+[PTBR+0] = 63;
+[PTBR+1] = "0100";
+[PTBR+2] = 64;
+[PTBR+3] = "0100";
+
+//Heap
+[PTBR+4] = -1;
+[PTBR+5] = "0000";
+[PTBR+6] = -1;
+[PTBR+7] = "0000";
+
+//Code
+[PTBR+8] = 69;
+[PTBR+9] = "0100";
+[PTBR+10] = 70;
+[PTBR+11] = "0100";
+[PTBR+12] = -1;
+[PTBR+13] = "0000";
+[PTBR+14] = -1;
+[PTBR+15] = "0000";
+
+//Stack
+[PTBR+16] = 81;
+[PTBR+17] = "0110";
+[PTBR+18] = -1;
+[PTBR+19] = "0000";
+
+
+
+// Setting up the page table for init process.
+
+//Library
+[PTBR+20] = 63;
+[PTBR+21] = "0100";
+[PTBR+22] = 64;
+[PTBR+23] = "0100";
+
+//Heap
+[PTBR+24] = 78;
+[PTBR+25] = "0110";
+[PTBR+26] = 79;
+[PTBR+27] = "0110";
+
+//Code
+[PTBR+28] = 65;
+[PTBR+29] = "0100";
+[PTBR+30] = 66;
+[PTBR+31] = "0100";
+[PTBR+32] = -1;
+[PTBR+33] = "0000";
+[PTBR+34] = -1;
+[PTBR+35] = "0000";
+
+//Stack
+[PTBR+36] = 76;
+[PTBR+37] = "0110";
+[PTBR+38] = 77;
+[PTBR+39] = "0110";
+
+
+// Making the entries in the Process table and system_status_table for both processes
+
+// Setting PID Numbers
+//as PID of idle process and init process is 0 and 1 respectively
+[PROCESS_TABLE + 1] = 0;
+[PROCESS_TABLE + 17] = 1;
+
+// Setting State
+[PROCESS_TABLE + 4] = CREATED;
+[PROCESS_TABLE + 20] = RUNNING;
+
+// Allocating space for user page area
+[PROCESS_TABLE + 11] = 82;
+[PROCESS_TABLE + 27] = 80;
+
+// Setting up UTPR field for idle and init process
+[PROCESS_TABLE + 13] = 8*512;
+[PROCESS_TABLE + 29] = 8*512;
+
+// Setting up KPRT field for idle and init process
+[PROCESS_TABLE + 12] = 0;
+[PROCESS_TABLE + 28] = 0;
+
+// Adding values of PTBR and PTLR field for idle and init process
+[PROCESS_TABLE + 14] = PAGE_TABLE_BASE;
+[PROCESS_TABLE + 15] = 10;
+[PROCESS_TABLE + 30] = PAGE_TABLE_BASE+20;
+[PROCESS_TABLE + 31] = 10;
+
+
+// Entry point to the first instruction of idle and init process pushed into the 
+// idle program stack.
+[81 * 512] = [69 * 512 + 1];
+[76 * 512] = [65 * 512 + 1];
+
+
+// Setting the init process in the beginning of stack page of init
+SP = 8*512;
+
+// Initialising the PTBR and PTLR for scheduling the INIT
+PTBR = PAGE_TABLE_BASE+20;
+PTLR = 10;
+
+
+[SYSTEM_STATUS_TABLE + 1] = 1;
+
+//breakpoint;
+ireturn;

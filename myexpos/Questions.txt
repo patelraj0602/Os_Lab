@@ -1,0 +1,20 @@
+1. Can I delete any .xsm file which I loaded in OS bootstrap code(block 0 and 1).
+Sol: You cannot delete anything instead you can overwrite it. Every time you load anything to OS bootstrap(block 0,1) it actually overwrites the content already present.
+Also the content of the OS bootstrap area(block 0,1) does not changes when I use fdisk(format the disk).
+
+2. How do I use an assembler to debug my .xsm code before loading it into OS bootstrap area.
+Sol: They haven't provided assembler.
+
+3. How to implement loops in XSM architecture.
+Sol: Same as we did in CO but for jmp we need to give an actual memory address.
+
+4. Is it possible to add comments, newline, spaces in an xsm file.
+Sol: No it is not possible
+
+5. Is it possible to write an application program using spl programming language.
+Sol: ????
+
+6. How to use run command of xfs-interface?
+Sol: ????
+
+7. How come we can use labels in privileged mode but not in unpriviledged mode??

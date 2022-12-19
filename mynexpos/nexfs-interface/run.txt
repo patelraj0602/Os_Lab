@@ -1,0 +1,52 @@
+fdisk
+load --os=primary $HOME/mynexpos/nespl/spl_progs/stage28/os_startup.xsm
+load --os=secondary $HOME/mynexpos/nespl/spl_progs/stage28/secondary_bm.xsm
+load --module 7 $HOME/mynexpos/nespl/spl_progs/stage28/bm.xsm
+load --module 5 $HOME/mynexpos/nespl/spl_progs/stage28/cshed.xsm
+load --module 8 $HOME/mynexpos/nespl/spl_progs/stage28/access_control_module.xsm
+load --module 0 $HOME/mynexpos/nespl/spl_progs/stage28/resource_manager.xsm
+load --module 4 $HOME/mynexpos/nespl/spl_progs/stage28/device_manager_module.xsm
+load --module 1 $HOME/mynexpos/nespl/spl_progs/stage28/process_manager_module.xsm
+load --module 2 $HOME/mynexpos/nespl/spl_progs/stage28/memory_manager_module.xsm
+load --module 3 $HOME/mynexpos/nespl/spl_progs/stage28/file_manager_module.xsm
+load --module 6 $HOME/mynexpos/nespl/spl_progs/stage28/pager_module.xsm
+load --idle $HOME/mynexpos/expl/expl_progs/stage28/idle_process.xsm
+load --init $HOME/mynexpos/expl/expl_progs/stage28/login.xsm
+load --shell $HOME/mynexpos/expl/expl_progs/stage28/extshell.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/ls.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/rm.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/cp.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/cat.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/lu.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/ru.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/assign1.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/assign2.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/assign3.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/assign4.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/assign5.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/m_store.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/m_merge.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/m_sort.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/pgm1.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/pgm2.xsm
+load --exec $HOME/mynexpos/expl/expl_progs/stage28/pid.xsm
+load --data $HOME/mynexpos/expl/expl_progs/stage28/smallNum.dat
+load --library $HOME/mynexpos/expl/library.lib
+load --int=10 $HOME/mynexpos/nespl/spl_progs/stage28/exit_int10.xsm
+load --int=7 $HOME/mynexpos/nespl/spl_progs/stage28/int7.xsm
+load --int=6 $HOME/mynexpos/nespl/spl_progs/stage28/int6.xsm
+load --int=9 $HOME/mynexpos/nespl/spl_progs/stage28/exec_int9.xsm
+load --int=8 $HOME/mynexpos/nespl/spl_progs/stage28/cint8.xsm
+load --int=11 $HOME/mynexpos/nespl/spl_progs/stage28/int11.xsm
+load --int=15 $HOME/mynexpos/nespl/spl_progs/stage28/shutdown_int15.xsm
+load --int=13 $HOME/mynexpos/nespl/spl_progs/stage28/int13.xsm
+load --int=14 $HOME/mynexpos/nespl/spl_progs/stage28/int14.xsm
+load --int=4 $HOME/mynexpos/nespl/spl_progs/stage28/cint4.xsm
+load --int=5 $HOME/mynexpos/nespl/spl_progs/stage28/int5.xsm
+load --int=17 $HOME/mynexpos/nespl/spl_progs/stage28/int17.xsm
+load --int=12 $HOME/mynexpos/nespl/spl_progs/stage28/int12.xsm
+load --int=16 $HOME/mynexpos/nespl/spl_progs/stage28/int16.xsm
+load --exhandler $HOME/mynexpos/nespl/spl_progs/stage28/cexception.xsm
+load --int=timer $HOME/mynexpos/nespl/spl_progs/stage28/ctimer.xsm
+load --int=console $HOME/mynexpos/nespl/spl_progs/stage28/console_interrupt.xsm
+load --int=disk $HOME/mynexpos/nespl/spl_progs/stage28/disk_controller_interrupt.xsm

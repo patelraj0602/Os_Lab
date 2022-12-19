@@ -1,0 +1,208 @@
+// INT4 CREATE AND DELETE FILE
+
+alias userSP R1;
+userSP = SP;
+
+// Changing the SP from user stack to kernel stack
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1] * 16 + 13] = SP;
+SP = [(PROCESS_TABLE+[SYSTEM_STATUS_TABLE+1]*16)+11]*512 - 1;
+
+alias syscall R2;
+syscall = [([PTBR+2*((userSP-5)/512)]*512)+((userSP-5)%512)];
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE+1]*16 + 9] = syscall;
+
+alias currentPid R3;
+currentPid = [SYSTEM_STATUS_TABLE+1];
+
+alias returnVal R11;
+
+// FILE CREATE
+if(syscall == 1) then
+
+	alias fileName R4;
+	alias permission R5;
+	fileName = [([PTBR+2*((userSP-4)/512)]*512)+((userSP-4)%512)];
+	permission = [([PTBR+2*((userSP-3)/512)]*512)+((userSP-3)%512)];
+	
+	alias isPresent R6;
+	isPresent = 0;
+	while(isPresent < 60) do
+		if([INODE_TABLE+(16*isPresent)+1] == fileName) then
+			break;
+		endif;
+		isPresent = isPresent + 1;
+	endwhile;
+	
+	// Then the file is already present; Return 0
+	if(isPresent != 60) then
+		returnVal = 0;
+		goto returnLabel;
+	endif;
+	
+	// Find the free entry in inode table
+	alias freeInodeIndex R6;
+	freeInodeIndex = 0;
+	while(freeInodeIndex < 60) do
+		if([INODE_TABLE+(16*freeInodeIndex)+1] == -1) then
+			break;
+		endif;
+		freeInodeIndex = freeInodeIndex + 1;
+	endwhile;
+	
+	// There is no free index in Inode table; Return -1;
+	if(freeInodeIndex == 60) then
+		returnVal = -1;
+		goto returnLabel;
+	endif;
+	
+	
+	// If the free Inode Table entry is found then
+	// Adding Inode Table Entries
+	[INODE_TABLE+(16*freeInodeIndex)+0] = DATA;
+	[INODE_TABLE+(16*freeInodeIndex)+1] = fileName;
+	[INODE_TABLE+(16*freeInodeIndex)+2] = 0;	
+	[INODE_TABLE+(16*freeInodeIndex)+3] = [PROCESS_TABLE+(currentPid*16)+3];
+	[INODE_TABLE+(16*freeInodeIndex)+4] = permission;
+	[INODE_TABLE+(16*freeInodeIndex)+8] = -1;
+	[INODE_TABLE+(16*freeInodeIndex)+9] = -1;
+	[INODE_TABLE+(16*freeInodeIndex)+10] = -1;
+	[INODE_TABLE+(16*freeInodeIndex)+11] = -1;
+	
+	// Adding Root File Entries
+	[ROOT_FILE+(8*freeInodeIndex)+0] = fileName;
+	[ROOT_FILE+(8*freeInodeIndex)+1] = 0;
+	[ROOT_FILE+(8*freeInodeIndex)+2] = DATA;
+	[ROOT_FILE+(8*freeInodeIndex)+4] = permission;
+	
+	alias username R7;
+	username = [USER_TABLE+(2*[PROCESS_TABLE+(16*currentPid)+3])];
+	[ROOT_FILE+(8*freeInodeIndex)+3] = username;
+	
+	
+	returnVal = 0;
+	goto returnLabel;
+	
+endif;
+
+
+
+
+// FILE DELETE
+if(syscall == 4) then
+
+	alias fileName R4;
+	fileName = [([PTBR+2*((userSP-4)/512)]*512)+((userSP-4)%512)];
+	
+	alias inodeIndex R5;
+	inodeIndex = 0;
+	while(inodeIndex < 60) do
+		if([INODE_TABLE+(16*inodeIndex)+1] == fileName) then
+			break;
+		endif;
+		inodeIndex = inodeIndex + 1;
+	endwhile;
+
+	// If that particular file is not present; return 0
+	if(inodeIndex == 60) then
+		returnVal = 0;
+		goto returnLabel;
+	endif;
+	
+	// If file type is not data; return -1
+	if([INODE_TABLE+(16*inodeIndex)+0] != DATA) then
+		returnVal = -1;
+		goto returnLabel;
+	endif;
+
+	// if exclusive permission is set
+	if([INODE_TABLE+(16*inodeIndex)+4] == 0) then
+		
+		alias inodeEntry R6;
+		inodeEntry = INODE_TABLE+(16*inodeIndex);
+		// if current user is not root and current usr doesn't own the file
+		if(([inodeEntry+3]!=ROOT)&&([inodeEntry+3]!=[PROCESS_TABLE+(currentPid*16)+3])) then
+			returnVal = -1;
+			goto returnLabel;
+		endif;
+		
+	endif;
+
+
+	// ACQUIRE INODE
+	multipush(R1,R2,R3,R4,R5);
+	R1 = 4;
+	R2 = [SYSTEM_STATUS_TABLE+1];
+	R3 = inodeIndex;
+	call RESOURCE_MANAGER;
+	multipop(R1,R2,R3,R4,R5);
+
+	// If the file is open(cannot be deleted); return -2
+	if([FILE_STATUS_TABLE+(4*inodeIndex)+1] != -1) then
+	
+		// Release Inode
+		multipush(R1,R2,R3,R4,R5);
+		R1 = 5;
+		R2 = [SYSTEM_STATUS_TABLE+1];
+		R3 = inodeIndex;
+		call RESOURCE_MANAGER;
+		multipop(R1,R2,R3,R4,R5);
+		
+		returnVal = -2;
+		goto returnLabel;
+	endif;
+
+	alias i R6;
+	alias j R7;
+	
+	i=0;
+	while(i < 4) do
+		if([INODE_TABLE+(inodeIndex*16)+8+i] != -1) then
+			j=0;
+			while(j<4) do
+				// if buffer entry for that file is dirty then reset
+				if(([BUFFER_TABLE+(j*4)]==[INODE_TABLE+(inodeIndex*16)+8+i])&&([BUFFER_TABLE+(j*4)+1] == 1)) then
+					[BUFFER_TABLE+(j*4)+1] = 0;
+				endif;
+				j=j+1;
+			endwhile;
+			
+			// RELEASE BLOCK
+			multipush(R1,R2,R3,R4,R5,R6,R7);
+			R1 = 4;
+			R2 = [INODE_TABLE+(inodeIndex*16)+8+i];
+			call MEMORY_MANAGER;
+			multipop(R1,R2,R3,R4,R5,R6,R7);
+			
+		endif;
+		
+		i=i+1;
+	endwhile;
+	
+	// Invalidate inode table
+	i = 0;
+	while(i<16) do
+		[INODE_TABLE+(16*inodeIndex)+i] = -1;
+		i=i+1;
+	endwhile;
+	
+	// Invalidate root entry
+	[ROOT_FILE+(8*inodeIndex)] = -1;
+	
+	// Release Inode
+	multipush(R1,R2,R3,R4,R5,R6,R7);
+	R1 = 5;
+	R2 = [SYSTEM_STATUS_TABLE+1];
+	R3 = inodeIndex;
+	call RESOURCE_MANAGER;
+	multipop(R1,R2,R3,R4,R5,R6,R7);
+	
+	returnVal = 0;
+	goto returnLabel;
+	
+endif;
+
+returnLabel:
+	[([PTBR+2*((userSP-1)/512)]*512)+((userSP-1)%512)] = returnVal;
+	[PROCESS_TABLE+(currentPid*16)+9] = 0;
+	SP = userSP;
+	ireturn;

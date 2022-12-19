@@ -1,0 +1,26 @@
+// Switching the stack to kernel stack and saving the register content.
+[PROCESS_TABLE + ( [SYSTEM_STATUS_TABLE + 1] * 16) + 13] = SP;
+
+// Setting SP to UArea Page number * 512 - 1
+SP = [PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 11] * 512 - 1;
+
+backup;
+
+// Changing the state for current user process.
+alias currentPID R0;
+alias process_table_entry R1;
+currentPID = [SYSTEM_STATUS_TABLE + 1];
+process_table_entry = PROCESS_TABLE + currentPID * 16;
+[process_table_entry + 4] = READY;
+
+// Invoking context switch module.
+call SCHEDULER;
+
+// Restoring the content of register
+restore;
+
+// Restoring the user SP saved in the process table entry of new process.
+SP = [PROCESS_TABLE + ( [SYSTEM_STATUS_TABLE + 1] * 16) + 13];
+[PROCESS_TABLE + ([SYSTEM_STATUS_TABLE + 1] * 16) + 12] = 0;
+
+ireturn;

@@ -1,0 +1,11 @@
+fdisk
+load --os $HOME/myexpos/spl/spl_progs/stage13/assgn1_mod/modify_os_startup.xsm
+load --module 7 $HOME/myexpos/spl/spl_progs/stage13/assgn1_mod/modify_boot_module.xsm
+load --idle $HOME/myexpos/expl/expl_progs/stage13/idle_process.xsm
+load --init $HOME/myexpos/expl/expl_progs/stage13/even.xsm
+load --int=18 $HOME/myexpos/expl/expl_progs/stage13/odd.xsm
+load --library $HOME/myexpos/expl/library.lib
+load --int=timer $HOME/myexpos/spl/spl_progs/stage13/assgn1_mod/modify_timer.xsm
+load --exhandler $HOME/myexpos/spl/spl_progs/stage13/haltprog.xsm
+load --int=10 $HOME/myexpos/spl/spl_progs/stage13/haltprog.xsm
+load --int=7 $HOME/myexpos/spl/spl_progs/stage13/sample_int7.xsm

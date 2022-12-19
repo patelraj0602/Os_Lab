@@ -1,0 +1,124 @@
+alias functionNum R1;
+alias currentPID R2;
+
+// Get PCB entry
+if(functionNum == 1) then
+	alias base R1;					// Of Process Table
+	alias offset R2;				// Pid value of the process
+	base = PROCESS_TABLE;
+	offset = 2;
+	while(offset < 16) do
+		if([base+(16*offset)+4] == TERMINATED) then
+			[base+(16*offset)+1] = offset;							// Set Pid value
+			[base+(16*offset)+4] = ALLOCATED;						// State
+			[base+(16*offset)+14] = PAGE_TABLE_BASE+(offset*20);	// PTBR
+			[base+(16*offset)+15] = 10;								// PTLR
+			
+			R0 = offset;
+			return;
+			
+		endif;
+		offset = offset + 1;
+	endwhile;
+	
+	R0 = -1;
+	return;
+endif;
+
+// Free User Area Page
+if(functionNum == 2) then
+	// breakpoint;
+
+	alias userAreaPageNumber R3;
+	userAreaPageNumber = [PROCESS_TABLE+(currentPID*16)+11];
+	
+	// We need to release this page
+	multipush(R1,R2,R3);
+	R1 = 2;					// Function Number
+	R2 = userAreaPageNumber;		// Page Number
+	call MEMORY_MANAGER;
+	multipop(R1,R2,R3);
+	
+	// breakpoint;
+	return;
+	
+endif;
+
+
+// Exit process
+if(functionNum == 3) then
+	
+	// Invoking Free Page table function
+	multipush(R1,R2);
+	R1 = 4;					// Function Number
+	R2 = currentPID;			// PID of current Process
+	call PROCESS_MANAGER;
+	multipop(R1,R2);
+	
+	// Invoking Free user area page
+	multipush(R1,R2);
+	R1 = 2;					// Function Number
+	R2 = currentPID;			// PID of current Process
+	call PROCESS_MANAGER;
+	multipop(R1,R2);
+	
+	// Set the state of the process at Terminated
+	[PROCESS_TABLE+(currentPID*16)+4] = TERMINATED;
+	
+	return;
+	
+endif;
+
+// Free Page Table
+if(functionNum == 4) then
+	
+	// Invalidate the page table entries for library page
+	[PTBR+0] = -1;
+	[PTBR+1] = "0000";
+	[PTBR+2] = -1;
+	[PTBR+3] = "0000";
+	
+	// breakpoint;
+	
+	// Invalidate page table
+	alias count R3;
+	alias pageNum R4;
+	count=2;
+	while(count < PTLR) do
+		pageNum = [PTBR+(2*count)];
+		if(pageNum!=-1) then
+			multipush(R1,R2,R3,R4);
+			R1 = 2;
+			R2 = pageNum;
+			call MEMORY_MANAGER;
+			multipop(R1,R2,R3,R4);
+			
+			// Invalidate the page table entry
+			[PTBR+(2*count)] = -1;
+			[PTBR+(2*count)+1] = "0000";
+		endif;
+		count = count + 1;
+	endwhile;
+	
+	// NOTE: CHECKOUT THE FUNCTIONALITY OF THIS IN LATER STAGES.
+	// Free disk block occupied by stack and heap portion of the earlier process.
+	count=2;
+	while(count < 10) do
+		if((count<4)||(count>7)) then
+			if([DISK_MAP_TABLE+count+(currentPID*10)] != -1) then
+				multipush(R1,R2,R3,R4);
+				R1 = 4;
+				R3 = currentPID;
+				R2 = [DISK_MAP_TABLE+count+(currentPID*10)];
+				call MEMORY_MANAGER;
+				multipop(R1,R2,R3,R4);
+			endif;
+			[DISK_MAP_TABLE+(currentPID*10)+count] = -1;
+		endif;
+		count = count + 1;
+	endwhile;
+	// breakpoint;
+	
+	return;
+	
+endif;

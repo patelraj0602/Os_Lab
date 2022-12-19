@@ -1,0 +1,71 @@
+alias functionNum R1;
+alias currentPID R2;
+
+// Acquire Disk
+if(functionNum == 3) then
+	while([DISK_STATUS_TABLE] == 1) do
+		[PROCESS_TABLE + (currentPID * 16) + 4] = WAIT_DISK;
+		multipush(R1,R2);
+		call SCHEDULER;
+		multipop(R1,R2);
+	endwhile;
+	
+	// Lock the disk for the current process.
+	[DISK_STATUS_TABLE] = 1;
+	[DISK_STATUS_TABLE+4] = currentPID;
+	return;
+	
+endif;
+
+// Acquire Terminal
+if(functionNum == 8) then
+
+	// Setting the state of current process to wait_terminal
+	while([TERMINAL_STATUS_TABLE] == 1) do
+		[PROCESS_TABLE + (currentPID * 16) + 4] = WAIT_TERMINAL;
+		multipush(R1,R2);
+		call SCHEDULER;
+		multipop(R1,R2); 
+	endwhile;
+		
+	[TERMINAL_STATUS_TABLE] = 1;
+	[TERMINAL_STATUS_TABLE+1] = currentPID;
+	// breakpoint;
+	return;
+endif;
+		
+// Release Terminal
+if(functionNum == 9) then
+
+	if(currentPID != [TERMINAL_STATUS_TABLE+1]) then
+		alias retVal R0;
+		retVal = -1;
+		return;
+		
+	else
+		
+		[TERMINAL_STATUS_TABLE] = 0;
+		alias iter R3;
+		iter = 0;
+		while(iter < 16) do
+			alias pidval R4;
+			pidval = [PROCESS_TABLE + (16 * iter) + 1];
+			if((pidval > 0) && (pidval < 16)) then
+				if([PROCESS_TABLE+(16*iter)+4] == WAIT_TERMINAL) then
+					[PROCESS_TABLE + (16 * iter) + 4] = READY;
+				endif;
+			endif;
+			iter = iter + 1;
+		endwhile;
+		
+		alias retVal R0;
+		retVal = 0;
+		// breakpoint;
+		return;
+	endif;
+
+else 
+	alias retVal R0;
+	retVal = -1;
+	return;
+endif;

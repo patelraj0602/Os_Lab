@@ -1,0 +1,37 @@
+fdisk
+load --os $HOME/myexpos/spl/spl_progs/stage25/os_startup.xsm
+load --module 7 $HOME/myexpos/spl/spl_progs/stage25/boot_module.xsm
+load --module 5 $HOME/myexpos/spl/spl_progs/stage25/scheduler_module.xsm
+load --module 0 $HOME/myexpos/spl/spl_progs/stage25/resource_manager.xsm
+load --module 4 $HOME/myexpos/spl/spl_progs/stage25/device_manager_module.xsm
+load --module 1 $HOME/myexpos/spl/spl_progs/stage25/process_manager_module.xsm
+load --module 2 $HOME/myexpos/spl/spl_progs/stage25/memory_manager_module.xsm
+load --module 3 $HOME/myexpos/spl/spl_progs/stage25/file_manager_module.xsm
+load --idle $HOME/myexpos/expl/expl_progs/stage25/idle_process.xsm
+load --init $HOME/myexpos/expl/expl_progs/stage25/shell.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage25/ls.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage25/rm.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage25/cp.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage25/cat.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage25/assign1.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage25/assign2.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage25/assign3.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage25/assign4.xsm
+load --data $HOME/myexpos/expl/expl_progs/stage25/numbers.dat
+load --data $HOME/myexpos/expl/expl_progs/stage25/smallNum.dat
+load --library $HOME/myexpos/expl/library.lib
+load --int=10 $HOME/myexpos/spl/spl_progs/stage25/exit_int10.xsm
+load --int=7 $HOME/myexpos/spl/spl_progs/stage25/int7.xsm
+load --int=6 $HOME/myexpos/spl/spl_progs/stage25/int6.xsm
+load --int=9 $HOME/myexpos/spl/spl_progs/stage25/exec_int9.xsm
+load --int=8 $HOME/myexpos/spl/spl_progs/stage25/fork_int8.xsm
+load --int=11 $HOME/myexpos/spl/spl_progs/stage25/int11.xsm
+load --int=15 $HOME/myexpos/spl/spl_progs/stage25/shutdown_int15.xsm
+load --int=13 $HOME/myexpos/spl/spl_progs/stage25/int13.xsm
+load --int=14 $HOME/myexpos/spl/spl_progs/stage25/int14.xsm
+load --int=4 $HOME/myexpos/spl/spl_progs/stage25/int4.xsm
+load --int=5 $HOME/myexpos/spl/spl_progs/stage25/int5.xsm
+load --exhandler $HOME/myexpos/spl/spl_progs/stage25/exception_handler.xsm
+load --int=timer $HOME/myexpos/spl/spl_progs/stage25/timer.xsm
+load --int=console $HOME/myexpos/spl/spl_progs/stage25/console_interrupt.xsm
+load --int=disk $HOME/myexpos/spl/spl_progs/stage25/disk_controller_interrupt.xsm

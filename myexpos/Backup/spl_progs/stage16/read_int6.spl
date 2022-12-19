@@ -1,0 +1,70 @@
+// Setting the MODE value in the process table.
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1] * 16 + 9] = 7;
+
+alias userSP R0;
+userSP = SP;
+
+// Saving the value of userStack into process table.
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1] * 16 + 13] = userSP;
+
+// Initializing the SP to the top to kernal stack
+SP = [(PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1] * 16) + 11] * 512 - 1;
+
+
+// Retrieving the file descriptor from the user stack (userSP-4)
+alias physicalPageNum R1;
+alias offset R2;
+alias fileDescPhysicalAddr R3;
+alias fileDescriptor R4;
+
+physicalPageNum = [PTBR + 2 * ((userSP - 4)/ 512)];
+offset = (userSP - 4) % 512;
+fileDescPhysicalAddr = (physicalPageNum * 512) + offset;
+fileDescriptor=[fileDescPhysicalAddr];
+
+if (fileDescriptor != -1) then
+	
+	// Something went wrong return -1
+	
+	alias physicalAddrRetVal R5;
+	physicalAddrRetVal = ([PTBR + 2 * ((userSP - 1) / 512)] * 512) + ((userSP - 1) % 512);
+	[physicalAddrRetVal] = -1;
+	
+else
+
+	// Retrieving the word address sent as an argument from user stack
+	
+	alias word_addr R5;
+	word_addr = [[PTBR + 2 * ((userSP - 3) / 512)] * 512 + ((userSP - 3) % 512)];
+	
+	// Backup the registers used so far.
+	multipush(R0,R1,R2,R3,R4,R5);
+	
+	// Saving the argument in the registers for calling device manager module(for terminal read)
+	alias function_no R1;
+	alias pidval R2;
+	alias addr R3;
+	
+	function_no = 4;
+	pidval = [SYSTEM_STATUS_TABLE + 1];
+	addr = word_addr;
+	
+	call DEVICE_MANAGER;
+	
+	// Restoring the registers from kernal stack.
+	multipop(R0,R1,R2,R3,R4,R5);
+
+	// Return 0 for success
+	alias physicalAddrRetVal R6;
+	physicalAddrRetVal = ([PTBR + 2 * (userSP - 1)/ 512] * 512) + ((userSP - 1) % 512);
+	[physicalAddrRetVal] = 0;
+	
+endif;
+
+// Reseting the value of mode flag
+[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 1] * 16 + 9] = 0;
+
+// Changing the stack back to kernal stack
+SP = userSP;
+
+ireturn;

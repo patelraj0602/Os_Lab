@@ -1,0 +1,8 @@
+fdisk
+load --os $HOME/myexpos/spl/spl_progs/stage11/os_startup.xsm
+load --init $HOME/myexpos/expl/expl_progs/stage11/assgn1.xsm
+load --library $HOME/myexpos/spl/spl_progs/stage11/library.lib
+load --int=timer $HOME/myexpos/spl/spl_progs/stage11/timer.xsm
+load --exhandler $HOME/myexpos/spl/spl_progs/stage11/haltprog.xsm
+load --int=10 $HOME/myexpos/spl/spl_progs/stage11/haltprog.xsm
+load --int=7 $HOME/myexpos/spl/spl_progs/stage11/sample_int7.xsm

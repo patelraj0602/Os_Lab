@@ -1,0 +1,20 @@
+alias first R0;
+alias second R1;
+alias sum R2;
+alias counter R3;
+
+first=0; 
+second=1;
+counter=1;
+
+print first;
+print second;
+
+while(counter <= 10) do
+  sum=first+second;
+  print sum;
+  first = second;
+  second = sum;
+  counter = counter + 1;
+  breakpoint;
+endwhile; 

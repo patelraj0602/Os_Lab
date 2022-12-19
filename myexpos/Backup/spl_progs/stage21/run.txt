@@ -1,0 +1,27 @@
+fdisk
+load --os $HOME/myexpos/spl/spl_progs/stage21/os_startup.xsm
+load --module 7 $HOME/myexpos/spl/spl_progs/stage21/boot_module.xsm
+load --module 5 $HOME/myexpos/spl/spl_progs/stage21/scheduler_module.xsm
+load --module 0 $HOME/myexpos/spl/spl_progs/stage21/resource_manager.xsm
+load --module 4 $HOME/myexpos/spl/spl_progs/stage21/device_manager_module.xsm
+load --module 1 $HOME/myexpos/spl/spl_progs/stage21/process_manager_module.xsm
+load --module 2 $HOME/myexpos/spl/spl_progs/stage21/memory_manager_module.xsm
+load --idle $HOME/myexpos/expl/expl_progs/stage21/idle_process.xsm
+load --init $HOME/myexpos/expl/expl_progs/stage21/shell.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage21/odd.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage21/even.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage21/ll.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage21/pid.xsm
+load --exec $HOME/myexpos/expl/expl_progs/stage21/assign2.xsm
+load --library $HOME/myexpos/expl/library.lib
+load --int=10 $HOME/myexpos/spl/spl_progs/stage21/exit_int10.xsm
+load --int=7 $HOME/myexpos/spl/spl_progs/stage21/write_int7.xsm
+load --int=6 $HOME/myexpos/spl/spl_progs/stage21/read_int6.xsm
+load --int=9 $HOME/myexpos/spl/spl_progs/stage21/exec_int9.xsm
+load --int=8 $HOME/myexpos/spl/spl_progs/stage21/fork_int8.xsm
+load --int=11 $HOME/myexpos/spl/spl_progs/stage21/int11.xsm
+load --int=15 $HOME/myexpos/spl/spl_progs/stage21/shutdown_int15.xsm
+load --exhandler $HOME/myexpos/spl/spl_progs/stage21/exception_handler.xsm
+load --int=timer $HOME/myexpos/spl/spl_progs/stage21/timer.xsm
+load --int=console $HOME/myexpos/spl/spl_progs/stage21/console_interrupt.xsm
+load --int=disk $HOME/myexpos/spl/spl_progs/stage21/disk_controller_interrupt.xsm

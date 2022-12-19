@@ -1,0 +1,15 @@
+fdisk
+load --os $HOME/myexpos/spl/spl_progs/stage16/os_startup.xsm
+load --module 7 $HOME/myexpos/spl/spl_progs/stage16/boot_module.xsm
+load --module 5 $HOME/myexpos/spl/spl_progs/stage16/scheduler_module.xsm
+load --module 0 $HOME/myexpos/spl/spl_progs/stage16/resource_manager.xsm
+load --module 4 $HOME/myexpos/spl/spl_progs/stage16/device_manager_module.xsm
+load --idle $HOME/myexpos/expl/expl_progs/stage16/idle_process.xsm
+load --init $HOME/myexpos/expl/expl_progs/stage16/euclid_gcd.xsm
+load --library $HOME/myexpos/expl/library.lib
+load --int=timer $HOME/myexpos/spl/spl_progs/stage16/timer.xsm
+load --int=10 $HOME/myexpos/spl/spl_progs/stage16/exit_int10.xsm
+load --int=7 $HOME/myexpos/spl/spl_progs/stage16/write_int7.xsm
+load --int=6 $HOME/myexpos/spl/spl_progs/stage16/read_int6.xsm
+load --exhandler $HOME/myexpos/spl/spl_progs/stage16/haltprog.xsm
+load --int=console $HOME/myexpos/spl/spl_progs/stage16/console_interrupt.xsm
